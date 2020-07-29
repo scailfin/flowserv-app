@@ -8,8 +8,7 @@ from setuptools import setup, find_packages
 
 install_requires = [
     'flowserv-core==0.2.0',
-    'streamlit',
-    'Click'
+    'streamlit'
 ]
 
 

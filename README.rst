@@ -17,3 +17,8 @@ About
 =====
 
 This is a test application that allows to run workflow templates as `streamlit.io <streamlit.io>`_` applications.
+
+
+.. code-block::bash
+
+    streamlit run flowapp/app.py
