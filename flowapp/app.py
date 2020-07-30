@@ -6,6 +6,7 @@ from flowapp.forms import show_form
 from flowserv.app import App
 
 import flowserv.config.app as config
+import flowserv.model.workflow.state as state
 
 
 @st.cache(allow_output_mutation=True)
@@ -24,8 +25,19 @@ def main(app_key):
     # Render the main input form.
     submit, arguments = show_form(app.parameters())
     if submit:
-        for key, val in arguments.items():
-            st.write('{} = {}'.format(key, val))
+        with st.spinner('Running ...'):
+            r = app.run(arguments)
+        if r['state'] == state.STATE_ERROR:
+            st.error('\n'.join(r['messages']))
+        else:
+            run_id = r['id']
+            for obj in r['files']:
+                filename, mimetype = app.get_file(run_id, file_id=obj['id'])
+                if mimetype == 'text/plain':
+                    st.subheader(obj['name'])
+                    with open(filename, 'r') as f:
+                        for line in f:
+                            st.write(line.strip())
         if st.button('clear', key='clear'):
             submit = False
 

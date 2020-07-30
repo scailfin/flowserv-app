@@ -62,11 +62,6 @@ setup(
     extras_require=extras_require,
     tests_require=tests_require,
     install_requires=install_requires,
-    entry_points={
-        'console_scripts': [
-            'flowapp = flowapp.cli:cli',
-        ]
-    },
     classifiers=[
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
