@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 """Required packages for install, test, docs, and tests."""
 
 install_requires = [
-    'flowserv-core>=0.3.2',
+    'flowserv-core>=0.3.3',
     'streamlit'
 ]
 

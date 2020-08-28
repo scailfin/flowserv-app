@@ -18,6 +18,7 @@ def get_app(app_key):
 
 def main(app_key):
     """Run application that is identified by the given key."""
+    st.set_option('deprecation.showfileUploaderEncoding', False)
     app = get_app(app_key)
     # Show application title, description, and instructions.
     st.title(app.name())
