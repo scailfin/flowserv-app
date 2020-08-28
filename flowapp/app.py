@@ -3,6 +3,7 @@ import streamlit as st
 import sys
 
 from flowapp.forms import show_form
+from flowapp.widget import show_image, show_json, show_table, show_text
 from flowserv.app import App
 
 import flowserv.config.app as config
@@ -32,12 +33,18 @@ def main(app_key):
         else:
             run_id = r['id']
             for obj in r['files']:
-                filename, mimetype = app.get_file(run_id, file_id=obj['id'])
-                if mimetype == 'text/plain':
-                    st.subheader(obj['name'])
-                    with open(filename, 'r') as f:
-                        for line in f:
-                            st.write(line.strip())
+                filename, _ = app.get_file(run_id, file_id=obj['id'])
+                ftype = obj.get('format', {}).get('type')
+                if 'title' in obj:
+                    st.subheader(obj['title'])
+                if ftype == 'csv':
+                    show_table(filename, spec=obj)
+                elif ftype == 'image':
+                    show_image(filename, spec=obj)
+                elif ftype == 'json':
+                    show_json(filename, spec=obj)
+                elif ftype == 'plaintext':
+                    show_text(filename, spec=obj)
         if st.button('clear', key='clear'):
             submit = False
 

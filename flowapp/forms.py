@@ -54,7 +54,7 @@ def show_form(parameters):
                     value=default_value
                 )
             else:
-                val = st.number_input(para.name)
+                val = st.text_input(para.name, para.default_value)
         else:
             val = st.text_input(para.name, para.default_value)
         arguments[para.para_id] = val
