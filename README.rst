@@ -7,12 +7,6 @@ FlowServ Demo App Using Streamlit.io
 
 
 
-.. figure:: https://github.com/scailfin/flowserv-core/blob/master/docs/figures/logo.png
-    :align: center
-    :alt: flowServ Logo
-
-
-
 About
 =====
 
