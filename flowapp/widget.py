@@ -1,6 +1,7 @@
-import json
 import pandas as pd
 import streamlit as st
+
+import flowserv.util as util
 
 
 def show_image(filename, spec):
@@ -10,9 +11,7 @@ def show_image(filename, spec):
 def show_json(filename, spec):
     if 'caption' in spec:
         st.write(spec['caption'])
-    with open(filename, 'r') as f:
-        obj = json.load(f)
-    st.write(obj)
+    st.write(util.read_object(filename, format=util.FORMAT_JSON))
 
 
 def show_table(filename, spec):
@@ -25,6 +24,5 @@ def show_table(filename, spec):
 def show_text(filename, spec):
     if 'caption' in spec:
         st.write(spec['caption'])
-    with open(filename, 'r') as f:
-        for line in f:
-            st.write(line.strip())
+    for line in util.read_text(filename).strip().split('\n'):
+        st.write(line)
