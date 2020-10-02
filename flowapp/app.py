@@ -1,18 +1,52 @@
+# This file is part of the Reproducible and Reusable Data Analysis Workflow
+# Server (flowServ).
+#
+# Copyright (C) 2019-2020 NYU.
+#
+# flowServ is free software; you can redistribute it and/or modify it under the
+# terms of the MIT License; see LICENSE file for more details.
+
+"""Main routine to run the flowApp application from the command line. Use the
+following command to run flowApp as a streamlit web application:
+
+streamlit run flowapp/app.py [ -- [-a | --key=] <application-identifier>]
+
+The application identifier references the workflow that is being run. This
+workflow has to have been installed prior to running the app (e.g., using the
+flowserv install CLI command). If you run the application without providing the
+application identifier as a command-line argument the identifier is expected to
+be in the environment variable FLOWSER_APP.
+"""
+
 import argparse
 import streamlit as st
 import sys
 
+from typing import Optional
+
 from flowapp.forms import show_form
-from flowapp.widget import show_image, show_json, show_table, show_text
-from flowserv.app import App
+from flowapp.widget import display_runfiles
+from flowserv.app.base import App
 
 import flowserv.config.app as config
-import flowserv.model.workflow.state as state
 
 
 @st.cache(allow_output_mutation=True)
-def get_app(app_key):
-    """Get the application handle."""
+def get_app(app_key: Optional[str] = None) -> App:
+    """Get the application handle for the specified application identifier. If
+    no application identifier is given it is expected in the environment
+    variable FLOWSERV_APP.
+
+    Parameters
+    ----------
+    app_key: string
+        Unique identifier referencing the workflow that defines the application
+        that is being run.
+
+    Returns
+    -------
+    flowserv.app.base.App
+    """
     return App(key=app_key)
 
 
@@ -24,28 +58,30 @@ def main(app_key):
     st.title(app.name())
     st.header(app.description())
     st.markdown(app.instructions())
-    # Render the main input form.
-    submit, arguments = show_form(app.parameters())
+    # Render the main input form. The result is a boolean flag indicating if
+    # the submit button was clicked and providing a mapping from template
+    # parameter identifier to the submitted value in the respective input
+    # form element.
+    submit, arguments = show_form(app.parameters().sorted())
     if submit:
+        # Run the workflow with the submitted parameter values. Show a spinner
+        # while the workflow runs.
         with st.spinner('Running ...'):
-            r = app.run(arguments)
-        if r['state'] == state.STATE_ERROR:
-            st.error('\n'.join(r['messages']))
+            run = app.start_run(arguments, poll_interval=1)
+        # Check if the workflow completed successfully or with errors.
+        if run.is_error():
+            # Display error messages.
+            st.error('\n'.join(run.messages()))
         else:
-            run_id = r['id']
-            for obj in r['files']:
-                filename, _ = app.get_file(run_id, file_id=obj['id'])
-                ftype = obj.get('format', {}).get('type')
-                if 'title' in obj:
-                    st.subheader(obj['title'])
-                if ftype == 'csv':
-                    show_table(filename, spec=obj)
-                elif ftype == 'image':
-                    show_image(filename, spec=obj)
-                elif ftype == 'json':
-                    show_json(filename, spec=obj)
-                elif ftype == 'plaintext':
-                    show_text(filename, spec=obj)
+            # Display run result files.
+            st.header('Run Results')
+            display_runfiles(run)
+            postrun = app.get_postproc_results()
+            if postrun:
+                st.header('Post-Processing Results')
+                display_runfiles(postrun)
+        # Show a clear button that allows to remove displayed results from a
+        # previous run.
         if st.button('clear', key='clear'):
             submit = False
 

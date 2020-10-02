@@ -77,5 +77,6 @@ target/
 .tmp/
 
 .flowserv/
+.flowapp/
 .rob/
 resources/config/local_dev

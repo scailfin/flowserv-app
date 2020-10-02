@@ -1,2 +1,2 @@
-flowserv-core>=0.4.0
+flowserv-core>=0.5.1
 streamlit

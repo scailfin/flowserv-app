@@ -10,7 +10,8 @@ FlowServ Demo App Using Streamlit.io
 About
 =====
 
-This is a test application that allows to run workflow templates as `streamlit.io <streamlit.io>`_ applications.
+This package allows to run `flowServ <https://github.com/scailfin/flowserv-core>`_ workflow templates as `streamlit.io <streamlit.io>`_ applications.
+
 
 
 Installation
@@ -24,33 +25,88 @@ Install the ``flowapp`` package:
 
     pip install git+https://github.com/scailfin/flowserv-app.git
 
-To configure the app make sure to set the following two environment variables (see the `flowServ documentation for more details <https://github.com/scailfin/flowserv-core/blob/master/docs/configuration.rst>`_):
+
+To configure the app make sure to set the environment variables *FLOWSERV_API_DIR* and *FLOWSERV_DATABASE*. These environment variables determine the database and the folder on the local file system where all workflow runs will be stored. You can use the environment variables *FLOWSERV_BACKEND_CLASS* and *FLOWSERV_BACKEND_MODULE* to configure the backend that is used to run workflows. See the `flowServ documentation for more details <https://github.com/scailfin/flowserv-core/blob/master/docs/configuration.rst>`_.
+
+The repository contains a default configuration file `env.config <https://github.com/scailfin/flowserv-app/blob/master/env.config>`_:
+
 
 .. code-block:: bash
 
-    export FLOWSERV_DATABASE=sqlite:////home/user/project/flowserv-app/db.sqlite
-    export FLOWSERV_API_DIR=/home/user/project/flowserv-app/.flowserv
+    # Directory for all workflow files
+    export FLOWSERV_API_DIR=$PWD/.flowapp
+    
+    # Use a multi-process backend
+    export FLOWSERV_BACKEND_CLASS=SerialWorkflowEngine
+    export FLOWSERV_BACKEND_MODULE=flowserv.controller.serial.engine
+    
+    # Alternative: Use a Docker backend
+    # export FLOWSERV_BACKEND_MODULE=flowserv.controller.serial.docker
+    # export FLOWSERV_BACKEND_CLASS=DockerWorkflowEngine
+    
+
+    # Use asynchronous workflow execution for the app.
+    export FLOWSERV_ASYNCENGINE=False
+
+    # Do not require user authentication
+    export FLOWSERV_AUTH=OPEN
+    
+    # Database (SQLLite)
+    export FLOWSERV_DATABASE=sqlite:///$FLOWSERV_API_DIR/flowapp.db
+    
+
+You can use this default configuration (e.g., by running `source env.config`). This will (i) maintain all workflow files in a sub-folder `.flowapp` with the current working directory, (ii) use a SQLite database within the API base directory, and (iii) use the default multi-process workflow engine. To use a Docker engine instead commant and uncomment the respective lines for *FLOWSERV_BACKEND_CLASS* and *FLOWSERV_BACKEND_MODULE* in the configuration file before running `source`.
 
 
-After setting the environment variables you need to create the flowServ database and install an example app (here we use the `ROB Hello World Demo <https://github.com/scailfin/rob-demo-hello-world>`_):
+
+Create Database
+---------------
+
+After setting the environment variables you need to create the **flowServ** database:
 
 .. code-block:: bash
 
     flowserv init
 
-    flowapp install helloworld
+
+This will override any existing database referenced by the environment variable *FLOWSERV_DATABASE* and create a fresh (empty) database schema.
+
+
+
+Install Demo Workflow
+---------------------
+
+Before running the application the workflow template that defines the application has to be installed (e.g. using `flowserv install`). Here we give an example that uses the `ROB Hello World Demo <https://github.com/scailfin/rob-demo-hello-world>`_:
+
+.. code-block:: bash
+
+    flowserv install helloworld -k helloworldapp -g
+
+
+This will install the **Hello World! Demo** workflow. The workflow identifier (required when running the streamlit application is `helloworldapp`.
 
 
 Running the Application
 =======================
 
-The `flowapp install command will output a string like `export FLOWSERV_APP=7d93c90963054dd7bac4f77fc2fad855`. Use this string to set the environment variable FLOWSERV_APP before you start the application.
+The command to run a **flowServ** workflow as a streamlit web application is:
 
 .. code-block:: bash
 
-    export FLOWSERV_APP=7d93c90963054dd7bac4f77fc2fad855
+    streamlit run flowapp/app.py [ -- [-a | --key=] <application-identifier>]
+
+
+The application identifier references the workflow that is being run. If you run the application without providing the application identifier as a command-line argument the identifier is expected to be in the environment variable *FLOWSER_APP*, e.g.,:
+
+.. code-block:: bash
+
+    export FLOWSERV_APP=helloworldapp
     streamlit run flowapp/app.py
 
+
+
+Run Docker  Demo
+----------------
 
 There is also a Docker container available that contains the *Hello World Demo* as well as the `PIE Colony Single-Image Analysis Workflow <https://github.com/scailfin/flowserv-PIE-workflows>`_. To run the demo application from the Docker container do the following:
 

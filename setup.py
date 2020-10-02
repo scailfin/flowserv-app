@@ -1,3 +1,11 @@
+# This file is part of the Reproducible and Reusable Data Analysis Workflow
+# Server (flowServ).
+#
+# Copyright (C) 2019-2020 NYU.
+#
+# flowServ is free software; you can redistribute it and/or modify it under the
+# terms of the MIT License; see LICENSE file for more details.
+
 import os
 import re
 
@@ -7,7 +15,7 @@ from setuptools import setup, find_packages
 """Required packages for install, test, docs, and tests."""
 
 install_requires = [
-    'flowserv-core>=0.4.0',
+    'flowserv-core>=0.5.1',
     'streamlit'
 ]
 
