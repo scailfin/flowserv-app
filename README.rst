@@ -35,27 +35,27 @@ The repository contains a default configuration file `env.config <https://github
 
     # Directory for all workflow files
     export FLOWSERV_API_DIR=$PWD/.flowapp
-    
+
     # Use a multi-process backend
     export FLOWSERV_BACKEND_CLASS=SerialWorkflowEngine
     export FLOWSERV_BACKEND_MODULE=flowserv.controller.serial.engine
-    
+
     # Alternative: Use a Docker backend
     # export FLOWSERV_BACKEND_MODULE=flowserv.controller.serial.docker
     # export FLOWSERV_BACKEND_CLASS=DockerWorkflowEngine
-    
+
 
     # Use asynchronous workflow execution for the app.
     export FLOWSERV_ASYNCENGINE=False
 
     # Do not require user authentication
-    export FLOWSERV_AUTH=OPEN
-    
+    export FLOWSERV_AUTH=open
+
     # Database (SQLLite)
     export FLOWSERV_DATABASE=sqlite:///$FLOWSERV_API_DIR/flowapp.db
-    
 
-You can use this default configuration (e.g., by running `source env.config`). This will (i) maintain all workflow files in a sub-folder `.flowapp` with the current working directory, (ii) use a SQLite database within the API base directory, and (iii) use the default multi-process workflow engine. To use a Docker engine instead commant and uncomment the respective lines for *FLOWSERV_BACKEND_CLASS* and *FLOWSERV_BACKEND_MODULE* in the configuration file before running `source`.
+
+You can use this default configuration (e.g., by running `source env.config`). This will (i) maintain all workflow files in a sub-folder `.flowapp` with the current working directory, (ii) use a SQLite database within the API base directory, and (iii) use the default multi-process workflow engine. To use a Docker engine instead change the respective lines for *FLOWSERV_BACKEND_CLASS* and *FLOWSERV_BACKEND_MODULE* in the configuration file before running `source`.
 
 
 

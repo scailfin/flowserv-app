@@ -24,15 +24,17 @@ import sys
 
 from typing import Optional
 
+from flowserv.client.app.base import Flowserv
+from flowserv.client.app.workflow import Workflow
+
 from flowapp.forms import show_form
 from flowapp.widget import display_runfiles
-from flowserv.app.base import App
 
-import flowserv.config.app as config
+import flowserv.config as config
 
 
 @st.cache(allow_output_mutation=True)
-def get_app(app_key: Optional[str] = None) -> App:
+def get_app(app_key: Optional[str] = None) -> Workflow:
     """Get the application handle for the specified application identifier. If
     no application identifier is given it is expected in the environment
     variable FLOWSERV_APP.
@@ -45,9 +47,9 @@ def get_app(app_key: Optional[str] = None) -> App:
 
     Returns
     -------
-    flowserv.app.base.App
+    flowserv.client.app.workflow.Workflow
     """
-    return App(key=app_key)
+    return Flowserv().open(identifier=app_key)
 
 
 def main(app_key):
@@ -92,6 +94,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-a", "--key", type=str, default=None, required=False)
     parsed_args = parser.parse_args(args)
-    app_key = config.APP_KEY(parsed_args.key)
+    app_key = parsed_args.key if parsed_args.key is not None else config.APP()
     # Run the main application.
     main(app_key)

@@ -16,7 +16,7 @@ import streamlit as st
 
 from typing import Dict, IO
 
-from flowserv.app.result import RunResult
+from flowserv.client.app.result import RunResult
 
 
 def display_runfiles(run: RunResult):

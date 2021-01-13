@@ -14,11 +14,7 @@ import streamlit as st
 
 from typing import Callable, Dict, List, Tuple
 
-from flowserv.model.parameter.base import ParameterBase
-from flowserv.model.parameter.boolean import is_bool
-from flowserv.model.parameter.enum import is_enum
-from flowserv.model.parameter.files import is_file
-from flowserv.model.parameter.numeric import is_numeric
+from flowserv.model.parameter.base import Parameter
 
 
 @st.cache(allow_output_mutation=True)
@@ -54,7 +50,7 @@ def enum_options(values: List[Dict]) -> Tuple[List[str], int, Callable]:
     return options, default_index, mapfunc
 
 
-def show_form(parameters: List[ParameterBase]) -> Tuple[bool, Dict]:
+def show_form(parameters: List[Parameter]) -> Tuple[bool, Dict]:
     """Display input controlls for the different parameters in a workflow
     template. Returns the value for the submit button and a mapping of
     parameter identifier to the values that are returned by the respective
@@ -76,11 +72,11 @@ def show_form(parameters: List[ParameterBase]) -> Tuple[bool, Dict]:
     # flowServ currently distinguishes five main types of parameters: bool,
     # enumeration, file, numeric and text.
     for para in parameters:
-        if is_bool(para):
+        if para.is_bool():
             # Render a checkbox for Boolean parameters.
-            checked = para.default_value if para.default_value else False
+            checked = para.default if para.default else False
             val = st.checkbox(label=para.name, value=checked)
-        elif is_enum(para):
+        elif para.is_select():
             # Render a selct box for all the options in an enumeration
             # parameter.
             options, index, mapfunc = enum_options(para.values)
@@ -90,14 +86,14 @@ def show_form(parameters: List[ParameterBase]) -> Tuple[bool, Dict]:
                 index=index,
                 format_func=mapfunc
             )
-        elif is_file(para):
+        elif para.is_file():
             # Render a file uploader for input files.
             val = st.file_uploader(label=para.name)
-        elif is_numeric(para):
+        elif para.is_numeric():
             # For numeric parameters we either render a text box or a slider if
             # the parameter has a range constraint.
             constraint = para.constraint
-            default_value = para.default_value
+            default_value = para.default
             if constraint is not None and constraint.is_closed():
                 if default_value is None:
                     default_value = constraint.min_value()
@@ -108,10 +104,10 @@ def show_form(parameters: List[ParameterBase]) -> Tuple[bool, Dict]:
                     value=default_value
                 )
             else:
-                val = st.text_input(para.name, para.default_value)
+                val = st.text_input(para.name, para.default)
         else:
             # Render a text box for all other parameter types.
-            val = st.text_input(para.name, para.default_value)
-        arguments[para.para_id] = val
+            val = st.text_input(para.name, para.default)
+        arguments[para.name] = val
     submit = st.button('Run')
     return submit, arguments
