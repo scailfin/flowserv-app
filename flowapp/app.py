@@ -24,7 +24,7 @@ import sys
 
 from typing import Optional
 
-from flowserv.client.app.base import Flowserv
+from flowserv.client.app.base import open_app
 from flowserv.client.app.workflow import Workflow
 
 from flowapp.forms import show_form
@@ -49,7 +49,7 @@ def get_app(app_key: Optional[str] = None) -> Workflow:
     -------
     flowserv.client.app.workflow.Workflow
     """
-    return Flowserv().open(identifier=app_key)
+    return open_app(identifier=app_key)
 
 
 def main(app_key):
