@@ -49,7 +49,7 @@ def get_app(app_key: Optional[str] = None) -> Workflow:
     -------
     flowserv.client.app.workflow.Workflow
     """
-    return open_app(identifier=app_key)
+    return open_app(env=config.env().open_access(), identifier=app_key)
 
 
 def main(app_key):

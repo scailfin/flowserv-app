@@ -16,10 +16,10 @@ import streamlit as st
 
 from typing import Dict, IO
 
-from flowserv.client.app.result import RunResult
+from flowserv.client.app.run import Run
 
 
-def display_runfiles(run: RunResult):
+def display_runfiles(run: Run):
     """Display all result files for a given workflow run.
 
     Parameters
@@ -27,19 +27,19 @@ def display_runfiles(run: RunResult):
     run: flowserv.app.result.RunResult
         Run result handle.
     """
-    for _, key, obj in run.files():
-        ftype = obj.get('format', {}).get('type')
-        file = run.open(key)
-        if 'title' in obj:
-            st.subheader(obj['title'])
+    for file in run.files():
+        ftype = file.format.get('type')
+        f = file.load().open()
+        if file.title:
+            st.subheader(file.title)
         if ftype == 'csv':
-            show_table(file, spec=obj)
+            show_table(f, spec=file.format)
         elif ftype == 'image':
-            show_image(file, spec=obj)
+            show_image(f, spec=file.format)
         elif ftype == 'json':
-            show_json(file, spec=obj)
+            show_json(f, spec=file.format)
         elif ftype == 'plaintext':
-            show_text(file, spec=obj)
+            show_text(f, spec=file.format)
 
 
 # -- Helper methods to display different file types. --------------------------
