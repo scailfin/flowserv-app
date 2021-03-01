@@ -72,23 +72,35 @@ def show_form(parameters: List[Parameter]) -> Tuple[bool, Dict]:
     # flowServ currently distinguishes five main types of parameters: bool,
     # enumeration, file, numeric and text.
     for para in parameters:
-        if para.is_bool():
+        if para.is_actor():
+            # Render a checkbox for Boolean parameters.
+            atype, aconfig = para.default if para.default else ('container', dict())
+            if atype == 'container':
+                image = st.text_input(para.label + ' (Docker Image)', aconfig.get('image', ''))
+                commands = st.text_area(
+                    para.label + ' (Commands)',
+                    '\n'.join(aconfig.get('commands', [])).strip()
+                )
+                val = ('container', {'image': image, 'commands': commands.split('\n')})
+            else:
+                raise ValueError("invalid actor type '{}'".format(atype))
+        elif para.is_bool():
             # Render a checkbox for Boolean parameters.
             checked = para.default if para.default else False
-            val = st.checkbox(label=para.name, value=checked)
+            val = st.checkbox(label=para.label, value=checked)
         elif para.is_select():
             # Render a selct box for all the options in an enumeration
             # parameter.
             options, index, mapfunc = enum_options(para.values)
             val = st.selectbox(
-                label=para.name,
+                label=para.label,
                 options=options,
                 index=index,
                 format_func=mapfunc
             )
         elif para.is_file():
             # Render a file uploader for input files.
-            val = st.file_uploader(label=para.name)
+            val = st.file_uploader(label=para.label)
         elif para.is_numeric():
             # For numeric parameters we either render a text box or a slider if
             # the parameter has a range constraint.
@@ -98,16 +110,16 @@ def show_form(parameters: List[Parameter]) -> Tuple[bool, Dict]:
                 if default_value is None:
                     default_value = constraint.min_value()
                 val = st.slider(
-                    label=para.name,
+                    label=para.label,
                     min_value=constraint.min_value(),
                     max_value=constraint.max_value(),
                     value=default_value
                 )
             else:
-                val = st.text_input(para.name, para.default)
+                val = st.text_input(para.label, para.default)
         else:
             # Render a text box for all other parameter types.
-            val = st.text_input(para.name, para.default)
+            val = st.text_input(para.label, para.default)
         arguments[para.name] = val
     submit = st.button('Run')
     return submit, arguments
