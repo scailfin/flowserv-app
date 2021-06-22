@@ -10,7 +10,9 @@ FlowServ Demo App Using Streamlit.io
 About
 =====
 
-This package allows to run `flowServ <https://github.com/scailfin/flowserv-core>`_ workflow templates as `streamlit.io <streamlit.io>`_ applications.
+***Depreciation***: The **flowserv-app** code has been integrated in `flowserv-core <https://github.com/scailfin/flowserv-core>`_ starting with version 0.9.0. This repository is therefore no longer maintained.
+
+ This package allows to run `flowServ <https://github.com/scailfin/flowserv-core>`_ workflow templates as `streamlit.io <streamlit.io>`_ applications.
 
 
 
