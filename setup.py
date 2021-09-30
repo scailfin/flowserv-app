@@ -15,7 +15,7 @@ from setuptools import setup, find_packages
 """Required packages for install, test, docs, and tests."""
 
 install_requires = [
-    'flowserv-core=>0.9.0',
+    'flowserv-core>=0.9.0',
     'appdirs>=1.4.4',
     'streamlit'
 ]
